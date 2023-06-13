@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Source+Sans+Pro:wght@700&display=swap');  
+
+#root
+.app{
+  height: 100%;
+  width: 100%;
+  font: "Inter" sans-serif;
+}
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
