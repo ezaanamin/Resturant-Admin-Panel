@@ -102,11 +102,6 @@ changeStream.on('change', function(data) {
   })
 })
 
-
-const changeStream1=Orders.watch()
-
-
-
 changeStream.on('change', (data) => {
 
 
@@ -119,38 +114,15 @@ changeStream.on('change', (data) => {
   }
 if(data.operationType!="insert")
   {
-  if (data.operationType === 'update' && data.updateDescription.updatedFields.status !== undefined)
-{
-  if(data.updateDescription.updatedFields.status=="deliverd")
-  {
-    io.emit('statusChanged', {id: data.documentKey._id, status:'Order Deliverd '});
-
-  }
-  if(data.updateDescription.updatedFields.status=="On Route")
-  {
-    io.emit('statusChanged', {id: data.documentKey.order_id,status:'On the way'});
-  }
-}
-if(data.operationType === 'update' && data.updateDescription.updatedFields.status =="Pending")
-{
-  io.emit('statusChanged', {id: data.documentKey.order_id,status:'New Order has been received'});
-
-}
-
-
-
-if (data.operationType === 'update' && data.updateDescription.updatedFields.rider == undefined && data.updateDescription.updatedFields.status=="Pending" )
-{
-  io.emit('statusChanged', { id: data.documentKey._id, status:"Rejected" });}
-
- io.emit(data.updateDescription.updatedFields.status)
-
- Orders.findById(data.documentKey._id).then((doc)=>{
+//  io.emit(data.updateDescription.updatedFields.status)
+Orders.findById(data.documentKey._id).then((doc)=>{
 
 
 if(doc)
 {
-  console.log(doc.order_id)
+  if (data.operationType === 'update' && data.updateDescription.updatedFields.rider == undefined && data.updateDescription.updatedFields.status=="Pending" )
+{
+  io.emit('statusChanged', { id:doc.order_id, status:"Rejected" });}
 
   if(data.updateDescription.updatedFields.status=="On Route")
   {

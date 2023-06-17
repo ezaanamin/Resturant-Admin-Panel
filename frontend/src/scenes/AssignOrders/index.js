@@ -23,7 +23,7 @@ useEffect(()=>{
   socket.on('statusChanged', data => {
 
 
-  //console.log(data)
+
   const filtered = data.filter(item => item.status.includes("Pending"));
   SetOrdersData(filtered)
 

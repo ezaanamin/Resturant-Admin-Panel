@@ -44,7 +44,7 @@ function Routes(){
   socket.on('statusChanged', data => {
 
 
-    console.log(data)
+    console.log(data.id,'ezaan amin')
     SetStatusData(data)
     SetStatusShow(true)
 
