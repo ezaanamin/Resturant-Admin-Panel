@@ -8,7 +8,7 @@ import { UserContext } from "./../../context/context"
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
-import Cookies from 'universal-cookie'
+import { getToken, decodeToken, isTokenExpired } from 'react-jwt';
 function Layout() {
   const isMoblie=useMediaQuery("(min-width:600px)")
   const [isSideBarOpen,setIsSideBarOpen]=useState(true)
@@ -16,20 +16,24 @@ function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const nav=useNavigate()
-  var cookie = new Cookies();
-  useEffect(()=>{
-    var cook=cookie.get("jwt_authorization")
+    useEffect(() => {
+      const token = localStorage.getItem('Token');
+      if (token) {
+        const expirationTime = decodeToken(token).exp * 1000     
+         if (Date.now() > expirationTime) {
+          localStorage.removeItem('Token');
+        } else {
+          const timeoutId = setTimeout(() => {
+            localStorage.removeItem('Token');
+           nav("/")
+
+          }, expirationTime - Date.now());
   
-    if(!cook)
-    {
-      nav("/")
-    }
-   
-  
-  
-  
-  
-    },[])
+          return () => clearTimeout(timeoutId);
+        }
+      }
+    }, []);
+
 
 
   return (

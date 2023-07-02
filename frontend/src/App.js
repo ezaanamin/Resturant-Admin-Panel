@@ -9,7 +9,6 @@ import { UserContext } from './context/context'
 import Routes from './scenes/Routes';
 function App() {
 
-  const [user,SetUser]=useState("")
   const [show1,setshow1]=useState(false)
   const [adminusername,SetAdminUserName]=useState("")
   const [professional,SetProfessional]=useState("")
@@ -21,7 +20,7 @@ function App() {
   const [statusShow,SetStatusShow]=useState(false)
   const [ShowAddRider,SetShowAddRider]=useState(false)
   const [modalShow,SetModalShow]=useState(false)
-  const  value={user,SetUser,
+  const  value={
     adminusername,SetAdminUserName,
     professional,SetProfessional,
     show,SetShow,

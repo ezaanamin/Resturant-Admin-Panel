@@ -120,21 +120,7 @@ width:"300px"
 
 function Products() {
   const nav=useNavigate()
-  var cookie = new Cookies();
-  var cook=cookie.get("jwt_authorization")
-  useEffect(()=>{
 
-  
-    if(!cook)
-    {
-      nav("/")
-    }
-   
-  
-  
-  
-  
-    },[cook])
 
   const { show,SetShow }=useContext(UserContext)
 

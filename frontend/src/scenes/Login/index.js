@@ -27,13 +27,7 @@ function Login() {
       .required('Password is required'),
   });
 
-useEffect(()=>{
-  if(user!="")
-  {
-     navigate("/dashborad")
-  }
 
-},[user])
 const handleClick = async (name,password1) => {
     const response = await axios.post('/users', {username:name,password:password1})
         .catch((error) => console.log('Error: ', error));
@@ -43,21 +37,14 @@ const handleClick = async (name,password1) => {
         if(response.data!='Wrong password' || response.data!='Wrong username')
         {
           console.log("Ezaan Rules")
-          const decoded=jwt(response.data.token)
           SetAdminUserName(response.data.name)
           SetProfessional(response.data.professional)
-          SetUser(decoded)
-          cookies.set("jwt_authorization",response.data.token,{
-
-            expires:new Date(decoded.exp*1000),
-          });
-         
-      
+          localStorage.setItem('Token', response.data.token);
+          navigate("/dashborad")
         }
-        
         if(response.data=='Wrong password' || response.data=='Wrong username')
         {
-          SetError(response.data)
+          alert(response.data)
         }
     
     }
@@ -83,13 +70,13 @@ const handleClick = async (name,password1) => {
       <h1 style={{color:"black",fontWeight:"900",textAlign:"center"}}>Login</h1>
       <TextField
    
-        id="username"
-        name="username"
-        label="UserName"
-        value={formik.values.username}
-        onChange={formik.handleChange}
-        error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username}
+   id="username"
+   name="username"
+   label="UserName"
+   value={formik.values.username}
+   onChange={formik.handleChange}
+   error={formik.touched.username && Boolean(formik.errors.username)}
+   helperText={formik.touched.username && formik.errors.username}
        
            style={{display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",left:70,top:40}}
      
