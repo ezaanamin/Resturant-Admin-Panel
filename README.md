@@ -21,8 +21,8 @@ Restaurant Admin Panel is a web-based application built with the MERN stack (Mon
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/your-username/restaurant-admin-panel.git`
-2. Navigate to the project directory: `cd restaurant-admin-panel`
+1. Clone the repository: `git clone https://github.com/ezaanamin1/Resturant-Admin-Panel.git`
+2. Navigate to the project directory: `cd Resturant-Admin-Panel`
 3. Install the dependencies: `npm install`
 4. Set up environment variables by creating a `.env` file based on the `.env.example` file.
 5. Start the development server: `npm start`
