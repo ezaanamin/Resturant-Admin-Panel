@@ -1,6 +1,6 @@
 # Restaurant Admin Panel - MERN Stack
 
-Restaurant Admin Panel is a web-based application built with the MERN stack (MongoDB, Express.js, React.js, Node.js) to provide a comprehensive management solution for restaurant operations.
+Restaurant Admin Panel is a web-based application built with the MERN stack (MongoDB, Express.js, React.js, Node.js) to provide a comprehensive management solution for restaurant operations. It utilizes WebSocket technology for real-time communication between the server and the admin panel.
 
 ## Features
 
@@ -9,11 +9,12 @@ Restaurant Admin Panel is a web-based application built with the MERN stack (Mon
 - **User Management**: Manage restaurant staff accounts, roles, and permissions.
 - **Analytics Dashboard**: Get insights into sales, revenue, and other key metrics through interactive charts and graphs.
 - **Settings and Configurations**: Configure restaurant details, opening hours, payment methods, and other settings.
+- **Real-Time Notifications**: Receive instant notifications for new orders, status updates, and other important events using WebSocket technology.
 
 ## Technologies Used
 
-- **Frontend**: React.js, React Router
-- **Backend**: Node.js, Express.js
+- **Frontend**: React.js, React Router,
+- **Backend**: Node.js, Express.js, WebSocket (Socket.io)
 - **Database**: MongoDB
 - **Authentication**: JSON Web Tokens (JWT)
 - **UI Framework**: Bootstrap, Material-UI
@@ -34,3 +35,4 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
