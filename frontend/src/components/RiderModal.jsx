@@ -12,6 +12,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import axois from "axios"
+import { useDispatch } from "react-redux";
+import { handleRiderOrder } from "../api/API";
 function getModalStyle() {
 
 
@@ -35,9 +37,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+
 function SimpleModal({order_id,riders}) {
 
-
+const dispatch=useDispatch()
  
 
     const {     showRiders,SetRidersShow,submitRider,SetSubmitRider}=useContext(UserContext)
@@ -53,11 +56,11 @@ function SimpleModal({order_id,riders}) {
     
   }
   const handle = async (rider_id) => {
-    const response = await axois.post('http://localhost:4000/riders/order', {rider_id:rider_id,order_id:order_id})
-        .catch((error) => console.log('Error: ', error));
+    const response =  await dispatch(handleRiderOrder({ rider_id, order_id }));
+       
 
 
-        if(response.data=="sucessful")
+        if(response.payload=="sucessful")
         {
           SetRidersShow(false)
 
@@ -99,7 +102,7 @@ null
 <input
     style={{position:"relative",top:20}}
       type="checkbox"
-      checked={rider==s._id}
+      checked={rider===s._id}
 
     
       className="custom-control-input"

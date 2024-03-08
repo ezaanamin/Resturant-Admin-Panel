@@ -8,111 +8,81 @@ import { useContext } from 'react'
 import {  Chip, Stack } from "@mui/material"
 import DataGridCustomToolbar from "../../components/DataGridCustomToolbar"
 import Modal1 from "../../components/RiderModal"
-
+import { useDispatch } from 'react-redux'
+import { GetOrdersDetails,GetRiders } from '../../api/API'
 function Orders() {
   const theme=useTheme();
 const [Orders,SetOrdersData]=useState([])
 const [riders,setRiders]=useState([])
 const {     showRiders,SetRidersShow,order_id,SetOrderID}=useContext(UserContext)
 
+const dispatch=useDispatch();
 
 
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/order/get/orders/product');
- 
-      if (response && response.data) {
-     
-  
-        
-        SetOrdersData(response.data)
-        console.log(response.data)
-        
-
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetOrdersDetails());
+      if (response && response.payload) {
+        console.log(response.payload, 'ezaanamin1');
+        SetOrdersData(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching orders:", error);
     }
-    const fetchData1 = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
- 
-      if (response && response.data) {
-     
-  
-        setRiders(response.data)
+  };
 
-   
-        
-
+  const fetchData1 = async () => {
+    try {
+      const response = await dispatch(GetRiders());
+      if (response && response.payload) {
+        setRiders(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching riders:", error);
     }
+  };
 
-
-
-  
-    // call the function
-    fetchData()
-    fetchData1()
-
-
-    
-
-  
-
-    
-      .catch(function (error) {
-        if (error.response) {
-            console.log(error.response)
-        }
-    }) 
-
-
-  }, [])
-
+  fetchData();
+  fetchData1();
+}, []);
 
   const columns = [
-  
-    {field:'_id',headerName:"Id",width:'200'},
     {
-      width:100,
-      field:"order_id",headerName:"Order ID",      renderCell:(parm)=>{
-        return '#'+parm.value
-    }},
+      field: '_id',
+      headerName: 'Id',
+      width: '200',
+    },
     {
-        field: "products",
-        headerName: "Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.products.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
+      width: 100,
+      field: 'order_id',
+      headerName: 'Order ID',
+      renderCell: (params) => {
+        return '#' + params.value;
       },
-
-      {
-        field: 'status',
-        headerName: 'Status',
-        sortable: false,
-        width:400,
-          renderCell:(parm)=>{
-          return parm.value
-      }},
-    
-      
-  
-  
-
-
-  ]
+    },
+    {
+      field: 'products',
+      headerName: 'Name',
+      width: 500,
+      type: 'singleSelect',
+      valueOptions: [], // This should be populated with unique product names
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25}>
+          {params.row.orders.map((product) => ( // Iterate through orders array to get product names
+            <Chip key={product._id} label={product.name} />
+          ))}
+        </Stack>
+      ),
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      sortable: false,
+      width: 400,
+      renderCell: (params) => params.value,
+    },
+  ];
 
  
   return (

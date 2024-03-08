@@ -4,11 +4,9 @@ import { useSelector } from 'react-redux'
 import Navbar from './../../components/Navbar'
 import { Outlet } from 'react-router'
 import SideBar from './../../components/SideBar'
-import { UserContext } from "./../../context/context"
-import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
-import { getToken, decodeToken, isTokenExpired } from 'react-jwt';
+import { decodeToken } from 'react-jwt';
 function Layout() {
   const isMoblie=useMediaQuery("(min-width:600px)")
   const [isSideBarOpen,setIsSideBarOpen]=useState(true)
@@ -16,23 +14,40 @@ function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const nav=useNavigate()
-    useEffect(() => {
-      const token = localStorage.getItem('Token');
-      if (token) {
-        const expirationTime = decodeToken(token).exp * 1000     
-         if (Date.now() > expirationTime) {
-          localStorage.removeItem('Token');
-        } else {
-          const timeoutId = setTimeout(() => {
+  useEffect(() => {
+    const token = localStorage.getItem('Token');
+    if (token) {
+      try {
+        const decodedToken = decodeToken(token);
+        if (decodedToken) {
+          const expirationTime = decodedToken.exp * 1000;
+          if (Date.now() > expirationTime) {
             localStorage.removeItem('Token');
-           nav("/")
-
-          }, expirationTime - Date.now());
-  
-          return () => clearTimeout(timeoutId);
+          } else {
+            const timeoutId = setTimeout(() => {
+              localStorage.removeItem('Token');
+              nav("/");
+            }, expirationTime - Date.now());
+            
+            return () => clearTimeout(timeoutId);
+          }
+        } else {
+        
+          alert('Wrong Password');
+          localStorage.removeItem('Token');
+          nav("/");
         }
+      } catch (error) {
+      
+        console.error('Error decoding token:', error);
+        localStorage.removeItem('Token');
+        nav("/");
       }
-    }, []);
+    } else {
+      // Handle case when token is null (not present in localStorage)
+      nav("/");
+    }
+  }, []);
 
 
 

@@ -9,7 +9,8 @@ import {  Chip, Stack } from "@mui/material"
 import DataGridCustomToolbar from "../../components/DataGridCustomToolbar"
 import Modal1 from "../../components/RiderModal"
 import io from 'socket.io-client';
-
+import { useDispatch } from 'react-redux'
+import { GetRiders,GetOrdersDetails } from '../../api/API'
 function AssignOrders() {
   const theme=useTheme();
 const [Orders,SetOrdersData]=useState([])
@@ -17,7 +18,7 @@ const [riders,setRiders]=useState([])
 const {     showRiders,SetRidersShow,order_id,SetOrderID}=useContext(UserContext)
 
 const socket=io.connect("http://localhost:4000/");
-
+const dispatch=useDispatch()
 useEffect(()=>{
 
   socket.on('statusChanged', data => {
@@ -35,113 +36,74 @@ useEffect(()=>{
 },[socket])
 
 
-
-
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/order/riders/orders/details');
- 
-      if (response && response.data) {
-     
-     
-   console.log(response.data,'ezaanamin1')
-        
-        SetOrdersData(response.data)
-        
-
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetOrdersDetails());
+      if (response && response.payload) {
+        console.log(response.payload, 'ezaanamin1');
+        SetOrdersData(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching orders:", error);
     }
-    const fetchData1 = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
- 
-      if (response && response.data) {
-     
-  
-        setRiders(response.data)
+  };
 
-   
-        
-
+  const fetchData1 = async () => {
+    try {
+      const response = await dispatch(GetRiders());
+      if (response && response.payload) {
+        setRiders(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching riders:", error);
     }
+  };
 
+  fetchData();
+  fetchData1();
+}, []);
 
-
-  
-    // call the function
-    fetchData()
-    fetchData1()
-
-
-    
-
-  
-
-    
-      .catch(function (error) {
-        if (error.response) {
-            console.log(error.response)
-        }
-    }) 
-
-
-  }, [])
 useEffect(()=>{
 
 },[])
 
-
-  const columns = [
-  
-    {field:'_id',headerName:"Id",width:'200'},
-    {
-      width:100,
-      field:"order_id",headerName:"Order ID",      renderCell:(parm)=>{
-        return '#'+parm.value
-    }},
-    {
-        field: "products",
-        headerName: "Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.products.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
-      {
-        field: "riders",
-        headerName: "Rider Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.riders.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
-
-      
-
-  
-
-
-  ]
-
+const columns = [
+  {
+    field: '_id',
+    headerName: 'Id',
+    width: '200',
+  },
+  {
+    width: 100,
+    field: 'order_id',
+    headerName: 'Order ID',
+    renderCell: (params) => {
+      return '#' + params.value;
+    },
+  },
+  {
+    field: 'products',
+    headerName: 'Name',
+    width: 500,
+    type: 'singleSelect',
+    valueOptions: [], // This should be populated with unique product names
+    renderCell: (params) => (
+      <Stack direction="row" spacing={0.25}>
+        {params.row.orders.map((product) => ( // Iterate through orders array to get product names
+          <Chip key={product._id} label={product.name} />
+        ))}
+      </Stack>
+    ),
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    sortable: false,
+    width: 400,
+    renderCell: (params) => params.value,
+  },
+];
  
   return (
 
@@ -151,7 +113,7 @@ useEffect(()=>{
 <Modal1 order_id={order_id} riders={riders}/>:null
 
 }
- <Header title={" Assigned  Orders"} subtitle={"List of all Orders"} left={300}/>
+ <Header title={" Assigned  Orders"} subtitle={"List of all Assigned Orders"} left={300}/>
  
  <Box mt="40px"
 position={"relative"} left="300px" 

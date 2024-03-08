@@ -247,34 +247,36 @@ export const GetOrderDetails= async (req, res) => {
 }
 export const GetOrderProductDetails= async (req, res) => {
 
-  Orders.aggregate( [
-    {
-      $lookup:
-        {
-          from: "products",
-          localField: "orders",
-          foreignField: "_id",
-          as: "products"
-        },
-        
- 
-        
-    
-       
-   }
-  ] ).then(function(doc) {
-    if(doc)
-    {
-      
-      res.json(doc)
-    }
-    else
-    {
-        res.json("Error")
-    }
+  // Orders.aggregate([
+  //   {
+  //     $lookup: {
+  //       from: "products",
+  //       localField: "orders",
+  //       foreignField: "_id",
+  //       as: "products"
+  //     }
+  //   }
+  // ]).then(function(docs) {
+  //   if (docs.length > 0) {
+  //     res.json(docs); // Sending the array of documents
+  //   } else {
+  //     res.json("No matching documents found");
+  //   }
+  // }).catch(function(error) {
+  //   res.status(500).json({ error: error.message });
+  // });
   
-  })
-  
+  Orders.find({})
+    .populate('orders')
+    .exec((err, orders) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json(orders);
+    });
+
   
 
 }
@@ -374,82 +376,49 @@ export const OrdersAndRider=async (req,res)=>{
 }
 
 export const OrdersDetailAndRider=async (req,res)=>{
-  Orders.aggregate([
-    {
-      $match: {
-        status:"assigned"
-      }
-    },
-    {
-      $lookup: {
-        from: "products",
-        localField: "orders",
-        foreignField: "_id",
-        as: "products"
-      }
-    },
-    {
-      $lookup: {
-        from: "riders",
-        localField: "rider",
-        foreignField: "_id",
-        as: "riders"
-      }
+  Orders.find({ status: 'assigned' })
+  .populate('orders') // Populates the orders array with Product documents
+  .populate('rider') // Populates the rider field with Rider document
+  .exec((err, orders) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: "An error occurred", error: err });
+      return;
     }
-  ]).then((doc,err)=>{
+    // Check if there are any orders found
+    if (orders && orders.length > 0) {
+      console.log(orders); // If needed for debugging
+      res.json(orders); // Sends the orders in the response
+    } else {
+      // If no orders are found or none have the 'assigned' status, send an appropriate response
+      res.status(404).json({ message: "No assigned orders found" });
+    }
+  });
 
-    if(doc)
-    {
-     res.send(doc)
-    }
-    if(err)
-    {
-      res.send(err)
-    }
-
-  })
 
 }
 
 export const RouteOrdersDetailAndRider=async (req,res)=>{
 
 
-  Orders.aggregate([
-    {
-      $match: {
-        status:"On Route"
-      }
-    },
-    {
-      $lookup: {
-        from: "products",
-        localField: "orders",
-        foreignField: "_id",
-        as: "products"
-      }
-    },
-    {
-      $lookup: {
-        from: "riders",
-        localField: "rider",
-        foreignField: "_id",
-        as: "riders"
-      }
+  Orders.find({ status: 'On Route' })
+  .populate('orders') // Populates the orders array with Product documents
+  .populate('rider') // Populates the rider field with Rider document
+  .exec((err, orders) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: "An error occurred", error: err });
+      return;
     }
-  ]).then((doc,err)=>{
-
-    if(doc)
-    {
-     res.send(doc)
+    // Check if there are any orders found
+    if (orders && orders.length > 0) {
+      console.log(orders); // If needed for debugging
+      res.json(orders); // Sends the orders in the response
+    } else {
+      // If no orders are found or none have the 'assigned' status, send an appropriate response
+      res.status(404).json({ message: "No assigned orders found" });
     }
-    if(err)
-    {
-      res.send(err)
-    }
-
-  })
-
-
+  });
 
 
 }

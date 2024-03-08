@@ -4,6 +4,8 @@ import Header from '../../components/Header'
 import {   DataGrid } from '@mui/x-data-grid'
 import {  Chip, Stack } from "@mui/material"
 import { DataGridPro, GridEventListener, useGridApiRef } from '@mui/x-data-grid-pro';
+import { useDispatch } from 'react-redux'
+import { GetCustomers } from '../../api/API'
 import axios from "axios"
 function Customers() {
   const theme=useTheme();
@@ -12,37 +14,22 @@ function Customers() {
  
 
 
-
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/customers');
-    
-      if (response && response.data) {
-       console.log(response.data)
-  
-        
-        SetCustomerData(response.data)
-        
-
+const dispatch=useDispatch()
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetCustomers());
+      if (response && response.payload) {
+        console.log(response.payload);
+        SetCustomerData(response.payload);
       }
-    
+    } catch (error) {
+      console.error('Error fetching customers:', error);
     }
- 
-    // call the function
-    fetchData()
-   
-    
-      .catch(function (error) {
-        if (error.response) {
-             console.log(error)
-        }
-    }) 
+  };
 
-
-  }, [])
+  fetchData();
+}, [dispatch]); 
 
 
   const columns = [

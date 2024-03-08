@@ -163,17 +163,17 @@ function SideBar({  user1,
    setActive(pathname.substring(1))
     },[pathname])
 
-    useEffect(()=>{
-      if(user=="")
-      {
-        cookies.remove('jwt_authorization');
+    // useEffect(()=>{
+    //   if(user=="")
+    //   {
+    //     cookies.remove('jwt_authorization');
 
-         console.log(cookies.getAll());
-         navigate('/')
-      }
+    //      console.log(cookies.getAll());
+    //      navigate('/')
+    //   }
     
 
-    },[user])
+    // },[user])
 
 
   return (

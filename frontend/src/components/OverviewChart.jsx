@@ -2,42 +2,35 @@ import React from 'react'
 import { useMemo } from 'react'
 import {useTheme} from "@mui/material"
 import {useEffect,useState} from "react"
-import axios from "axios"
+
 import { ResponsiveLine } from "@nivo/line";
+import {useDispatch } from 'react-redux';
+import { GetSales } from '../api/API';
 function OverviewChart({isDashboard=false,view}) {
  const [data1,SetData]=useState({})
-
+ const dispatch=useDispatch()
  const theme=useTheme();
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/sales/sales');
-    console.log(response)
-      if (response && response.data) {
-     
-  
-        
-        SetData(response.data)
-        
-
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetSales());
+      console.log(response,'ezaan');
+      if (response && response.payload) {
+        SetData(response.payload);
       }
-    
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response);
+      }
     }
-    // call the function
-    fetchData()
-  
+  };
 
-    
-      .catch(function (error) {
-        if (error.response) {
-            console.log(error.response)
-        }
-    }) 
+  // Call the function
+  fetchData();
 
+  // Make sure to include dispatch in the dependency array if it's a dependency
+}, [dispatch]);
 
-  }, [])
   const [totalSalesLine, totalUnitsLine] = useMemo(() => {
     if (!data1) {
    

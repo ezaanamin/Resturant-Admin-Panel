@@ -14,7 +14,9 @@ import Select from 'react-select';
 import { InputLabel } from '@mui/material';
 import{Box}  from '@mui/material'
 import { useNavigate } from 'react-router-dom';
- 
+ import { useDispatch } from 'react-redux';
+ import { fetchOrderDetailsById } from '../../api/API';
+import { uploadFile,addOrder,editOrder } from '../../api/API';
 function EditProducts() {
   const location = useLocation();
    let [img,setImg]=useState("")
@@ -25,20 +27,21 @@ function EditProducts() {
   const [fileInput,SetFileInput]=useState(true)
   const [file, setFile] = useState(null)
   const [res,setres]=useState(false)
+  const dispatch=useDispatch()
   useEffect(() => {
     
     
     
     const fetchData = async () => {
-      const response = await axios.get(`http://localhost:4000/order/get/orders/${Id}`);
+      const response = await dispatch(fetchOrderDetailsById(Id));
  
-      if (response && response.data) {
-     console.log(response.data)
-     SetProductName(response.data.name)
-     SetProductCostPrice(response.data.price)
-     SetProductPrice(response.data.cost_price)
-     SetProductCat(response.data.cat)
-       setImg(response.data.img)
+      if (response && response.payload) {
+     console.log(response.payload)
+     SetProductName(response.payload.name)
+     SetProductCostPrice(response.payload.price)
+     SetProductPrice(response.payload.cost_price)
+     SetProductCat(response.payload.cat)
+       setImg(response.payload.img)
 
 
 
@@ -101,18 +104,16 @@ const Selling_onChange=(e)=>{
 }
 
 
-  const upload = async () => {
-    try {
-      //console.log(file)
-      const formData = new FormData();
-      formData.append("file", file);
-   console.log(formData)
-      const res = await axios.post("http://localhost:4000/upload",formData);
-  return res.data
-    } catch (err) {
-      console.log(err.response);
-    }
-  };
+const upload = async () => {
+  try {
+    const imgUrl = await dispatch(uploadFile(file));
+    console.log(imgUrl);
+    return imgUrl; 
+  } catch (err) {
+    console.log(err.response);
+
+  }
+};
 
   const handleclose=()=>{
     SetShow(false)
@@ -135,46 +136,31 @@ const Selling_onChange=(e)=>{
   ]
 
   const handleClick = async () => {
-   if(fileState==true)
-   {
-
-   
-    const imgUrl = await upload(); 
-    const response = await axios
-    .post(`http://localhost:4000/order/edit/order/${Id}`,{
-     name: ProductName,
-     price: ProductPrice,
-     cost_price: ProductCostPrice,
-      cat: ProductCat,
-      img:imgUrl
- 
-  
-  
-    })
-    .catch((error) => console.log('Error: ', error));
-    if (response && response.data) {
-      if(response.data=="sucessful")
-      setres(true)
-
-    }
-
-
-   }
-    const response = await axios
-    .post(`http://localhost:4000/order/edit/order/${Id}`,{
-     name: ProductName,
-     price: ProductPrice,
-     cost_price: ProductCostPrice,
-      cat: ProductCat,
- 
-  
-  
-    })
-    .catch((error) => console.log('Error: ', error));
-    if (response && response.data) {
-      if(response.data=="sucessful")
-      setres(true)
-
+    if (fileState === true) {
+      try {
+        const imgUrl = await upload(); 
+        const response = await dispatch(editOrder({ Id, ProductName, ProductPrice, ProductCostPrice, ProductCat, imgUrl }));
+    
+        if (response && response.payload) {
+          if (response.payload === "successful") {
+            setres(true);
+          }
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    } else {
+      try {
+        const response = await dispatch(editOrder({ Id, ProductName, ProductPrice, ProductCostPrice, ProductCat }));
+    
+        if (response && response.payload) {
+          if (response.payload === "successful") {
+            setres(true);
+          }
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
     }
 
   }

@@ -14,9 +14,11 @@ import { Input } from '@material-ui/core';
 import { InputLabel } from '@mui/material';
 import{Box}  from '@mui/material'
 
- 
+import { useDispatch } from 'react-redux';
+import { uploadFile,addOrder } from '../../api/API';
 function AddProducts({name}) {
 
+  const dispatch=useDispatch()
 
   const [fileInput,SetFileInput]=useState(true)
   const [ProductName,SetProductName]=useState("");
@@ -31,8 +33,8 @@ function AddProducts({name}) {
       const formData = new FormData();
       formData.append("file", file);
    console.log(formData)
-      const res = await axios.post("http://localhost:4000/order/upload",formData);
-  return res.data
+      const res = await dispatch(uploadFile(formData));
+  return res.payload
     } catch (err) {
       console.log(err.response);
     }
@@ -73,28 +75,26 @@ function AddProducts({name}) {
     { label: "Beverage", value: "Beverage" },
   ]
 
-  const handleClick = async (name,cat,price,cost_price) => {
- 
-    const imgUrl = await upload(); 
-    console.log(imgUrl)
-    const response = await axios
-    .post('http://localhost:4000/order/',{
-     name: name,
-     price: price,
-     cost_price: cost_price,
-      cat: cat,
-      img: file ? imgUrl : "",
+  const handleClick = async (name, cat, price, cost_price) => {
+    try {
+      const imgUrl = await upload(); 
+      console.log(imgUrl);
   
+      const response = await dispatch(addOrder({
+        name: name,
+        price: price,
+        cost_price: cost_price,
+        cat: cat,
+        img: file ? imgUrl : "",
+      }));
   
-    })
-  
-    .catch((error) => console.log('Error: ', error));
-  if(response && response.data)
-    {
-      if(response.data="Sucessful")
-      {
-        SetShow(false)
+      if(response && response.payload) {
+        if(response.payload === "Successful") {
+          SetShow(false);
+        }
       }
+    } catch (error) {
+      console.log('Error: ', error);
     }
   }
   const colourStyles = {

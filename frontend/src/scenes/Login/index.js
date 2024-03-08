@@ -6,11 +6,14 @@ import { useFormik } from 'formik';
 
 import { useState } from 'react';
 import Cookies from 'universal-cookie';
-import jwt from "jwt-decode"
 import { UserContext } from "./../../context/context"
 import { useNavigate } from "react-router-dom";
 import axios from "../../axois/axois"
+import Logo from "../../assets/Amin Resturant-logos_white.png"
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../api/API';
 function Login() {
+  const dispatch=useDispatch()
   const cookies=new Cookies()
   const navigate = useNavigate();
   const { user,SetUser,adminusername,SetAdminUserName,professional,SetProfessional}=useContext(UserContext)
@@ -27,28 +30,18 @@ function Login() {
       .required('Password is required'),
   });
 
-
-const handleClick = async (name,password1) => {
-    const response = await axios.post('/users', {username:name,password:password1})
-        .catch((error) => console.log('Error: ', error));
-    if (response && response.data) {
-        console.log(response);
-        console.log(response.data);
-        if(response.data!='Wrong password' || response.data!='Wrong username')
-        {
-          console.log("Ezaan Rules")
-          SetAdminUserName(response.data.name)
-          SetProfessional(response.data.professional)
-          localStorage.setItem('Token', response.data.token);
-          navigate("/dashborad")
-        }
-        if(response.data=='Wrong password' || response.data=='Wrong username')
-        {
-          alert(response.data)
-        }
-    
+  const handleClick = async (name, password1) => {
+    try {
+      const response = await dispatch(loginUser({ username: name, password: password1 }));
+      console.log(response);
+      console.log(response.payload);
+      console.log("Ezaan Rules");
+      navigate("/dashborad");
+    } catch (error) {
+      console.error('Error: ', error);
+      alert(error.message);
     }
-};
+  };
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -64,56 +57,65 @@ const handleClick = async (name,password1) => {
     },
   });
 
+
   return (
-    <div style={{backgroundColor:"white",width:400,height:500,display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",top:100}} >
-      <form onSubmit={formik.handleSubmit}>
-      <h1 style={{color:"black",fontWeight:"900",textAlign:"center"}}>Login</h1>
-      <TextField
-   
-   id="username"
-   name="username"
-   label="UserName"
-   value={formik.values.username}
-   onChange={formik.handleChange}
-   error={formik.touched.username && Boolean(formik.errors.username)}
-   helperText={formik.touched.username && formik.errors.username}
+    <div style={{
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: "20px", 
+    }}>
+      <div style={{
+        backgroundColor:'white',
+        width: "50%", 
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(to left, white)", 
+        borderRadius: "20px", 
        
-           style={{display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",left:70,top:40}}
-     
-       
-    
-          margin="normal"
-          variant="outlined"
-        />
-             <TextField
-                    
-                      id="password"
-                      name="password"
-                      label="Password"
-                      type="password"
-                      value={formik.values.password}
-                      onChange={formik.handleChange}
-                      error={formik.touched.password && Boolean(formik.errors.password)}
-                      helperText={formik.touched.password && formik.errors.password}
-                      margin="normal"
-                      variant="outlined"
-      
-           style={{display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",left:70,top:70}}
-     
-        />
-        <Button type="submit"    style={{display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",top:20,width:300,top:100}}  variant="contained">
-  Submit
-</Button>
-
-
-<h1 style={{display:"block",marginRight:"auto",marginLeft:"auto",position:"relative",top:40,top:100,color:"red"}}>{Error}</h1>
-
-</form>
-
-
-        
+      }}>
+        <form onSubmit={formik.handleSubmit} style={{ width: "80%", textAlign: "center" }}>
+          <h1 style={{ color: "black", fontWeight: "900" }}>Restaurant Admin Panel</h1>
+          <TextField
+            id="username"
+            name="username"
+            label="Username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
+            margin="normal"
+            variant="outlined"
+            style={{ width: "100%", marginBottom: "20px", borderRadius: "10px" }} // Adding border radius to text fields
+          />
+          <TextField
+            id="password"
+            name="password"
+            label="Password"
+            type="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            margin="normal"
+            variant="outlined"
+            style={{ width: "100%", marginBottom: "20px", borderRadius: "10px" }} // Adding border radius to text fields
+          />
+          <Button type="submit" variant="contained" style={{ width: "100%", borderRadius: "10px" }}> {/* Adding border radius to the button */}
+            Submit
+          </Button>
+          {Error && <h1 style={{ color: "red", marginTop: "20px" }}>{Error}</h1>}
+        </form>
+      </div>
+  
+      <div style={{ width: "50%" }}> 
+        <img src={Logo} alt="Restaurant Logo" style={{ width: "100%" }} />
+      </div>
     </div>
-  )
+  );
+  
 }
 
 export default Login

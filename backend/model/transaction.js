@@ -4,10 +4,8 @@ const TransactionSchema = new mongoose.Schema(
 
   transaction_type:String,
     Order_Number:Number,
-    Date:Date,
+    date:Date,
     order_id:Number,
-    customer_id:mongoose.Schema.Types.ObjectId,
-    status:String,
     total_amount:Number,
 
 

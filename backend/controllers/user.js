@@ -5,72 +5,65 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
 
 async function comparePassword(password, hashedPassword) {
-  try {
-    const match = await bcrypt.compare(password, hashedPassword);
-    return match;
-  } catch (error) {
-    console.error('Error comparing passwords:', error);
-    return false;
-  }
+ 
+  const client = await mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    
+    
+  })  
 }
 export const getUser = async (req, res) => {
-
+  try {
     const client = await mongoose.connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       
       
-    })   
-    console.log(req.body)
+    })  
+ 
+    console.log(req.body);
     if(client)
     {
-User.findOne({name:req.body.username}) .then(function(doc) {
-    if(!doc)
-    {
-        
-        res.send("Wrong username")
-        
-    }
-    else
-    {
-      let p=req.body
-      console.log(doc.password)
+    const doc = await User.findOne({ name: req.body.username });
 
-      console.log(p)
- 
-      comparePassword(req.body.password, doc.password)
-      .then((result) => {
-        if (result) {
-          let name=doc.name
-          const token = jwt.sign(
-            { user_id: doc._id,name },
-            process.env.TOKEN_KEY,
-            {
-              expiresIn: "2h",
-            }
-          );
-          res.json({"token":token,name:name,professional:"Amin Restaurant"})
-        } else {
-     res.send("Wrong password")
-        }
-      })
-      .catch((error) => {
-        console.error('Error comparing passwords:', error);
-      });
+    if (!doc) {
+      return res.send("Wrong username");
+    }
+
+    const match = await bcrypt.compare(req.body.password, doc.password);
+console.log(match)
+    if (match) {
+      const token = jwt.sign(
+        { user_id: doc._id, name: doc.name },
+        process.env.TOKEN_KEY,
+        { expiresIn: "2h" }
+      );
+      return res.json({ token: token, name: doc.name, professional: "Amin Restaurant" });
+    } else {
+      return res.json({error:"error"});
+    }
+  }
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).send("Internal Server Error");
+  } 
+};
+
  
   
-      
-   
-      
+  
 
-    }
-
-
- 
-})
-    }
-
-
-
-
+async function hashPassword(password) {
+  try {
+    // Generate a salt
+    const salt = await bcrypt.genSalt(10);
+    // Hash the password along with the salt
+    const hashedPassword = await bcrypt.hash(password, salt);
+     return hashedPassword
+  } catch (error) {
+    // Handle error
+    console.error('Error hashing password:', error);
+    throw error;
+  }
 }

@@ -8,41 +8,33 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios'
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from '@emotion/react'
+import { useDispatch } from 'react-redux'
+import { GetSales } from '../../api/API'
+
 function Monthly() {
     const [startDate,setStartDate]=useState(new Date("2022-02-01"))
     const [endDate,setEndDate]=useState(new Date("2022-03-01"))
     const [data1,SetData]=useState({})
-    const theme=useTheme()
+    const theme=useTheme();
+    const dispatch=useDispatch()
     useEffect(() => {
-    
-    
-    
-        const fetchData = async () => {
-          const response = await axios.get('http://localhost:4000/sales/sales');
-        console.log(response)
-          if (response && response.data) {
-         
-      
-            
-            SetData(response.data)
-            
-    
+      const fetchData = async () => {
+        try {
+          const response = await dispatch(GetSales());
+          console.log(response.payload['salesByCategory']);
+          if (response && response.payload) {
+            SetData(response.payload);
           }
-        
+        } catch (error) {
+          if (error.response) {
+            console.log(error.response);
+          }
         }
-        // call the function
-        fetchData()
-      
-    
-        
-          .catch(function (error) {
-            if (error.response) {
-                console.log(error.response)
-            }
-        }) 
+      };
     
     
-      }, [])
+      fetchData();
+    }, [dispatch]); 
 
       const [formattedData] = useMemo(() => {
         if (!data1) return [];

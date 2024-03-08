@@ -26,6 +26,8 @@ import Cookies from 'universal-cookie'
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditProducts from './EditProduct'
+import { fetchStarters, fetchBreakfast, fetchLunch, fetchDinner, fetchDessert, fetchBeverage,deleteOrder } from '../../api/API';
+import { useDispatch } from 'react-redux'
 const Product=({
 id,
 name,
@@ -41,7 +43,7 @@ const [price1,SetPrice]=useState(0)
 const [cat1,SetCat]=useState("")
 const { show,SetShow,show1,setshow1,productname,SetProductName }=useContext(UserContext)
 const [e,sete]=useState("")
-
+const dispatch=useDispatch()
 
 async function hi(name)
 {
@@ -52,9 +54,9 @@ async function hi(name)
 async function bye(name)
 {
 
-  const response = await axios.delete(`http://localhost:4000/order/delete/order/${name}`);
+  const response = await dispatch(deleteOrder(name));
 
-  if (response && response.data) {
+  if (response && response.payload) {
          if(response.data=="Sucess")
          {
           alert("deleted")
@@ -120,6 +122,7 @@ width:"300px"
 
 function Products() {
   const nav=useNavigate()
+  const dispatch=useDispatch()
 
 
   const { show,SetShow }=useContext(UserContext)
@@ -138,72 +141,72 @@ function Products() {
     
     
         const fetchData = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/starters');
+          const response = await dispatch(fetchStarters());
         console.log(response)
-          if (response && response.data) {
+          if (response && response.payload) {
          
       
             
-            SetItemsstarters(response.data)
+            SetItemsstarters(response.payload)
             
    
           }
         
         }
         const fetchData1 = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/breakfast');
+          const response = await  await dispatch(fetchBreakfast());
     
-          if (response && response.data) {
+          if (response && response.payload) {
          
          
             
-            SetItemsbreakfast(response.data)
+            SetItemsbreakfast(response.payload)
             
    
           }
         }
         const fetchData2 = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/lunch');
+          const response = await   dispatch(fetchLunch());
     
-          if (response && response.data) {
+          if (response && response.payload) {
     
             
-            SetItemslunch(response.data)
+            SetItemslunch(response.payload)
             
    
           }
         }
         const fetchData3 = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/dinner');
+          const response = await   dispatch(fetchDinner());
     
-          if (response && response.data) {
+          if (response && response.payload) {
          
          
             
-            SetItemsdinner(response.data)
+            SetItemsdinner(response.payload)
             
    
           }
         }
         const fetchData4 = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/dessert');
+          const response = await   dispatch(fetchDessert());
     
-          if (response && response.data) {
+          if (response && response.payload) {
           
-            console.log(response.data)
+            console.log(response.payload)
       
             
-            SetItemsdessert(response.data)
+            SetItemsdessert(response.payload)
             
    
           }
         }
         const fetchData5 = async () => {
-          const response = await axios.get('http://localhost:4000/order/get/beverage');
+          const response =  await  dispatch(fetchBeverage());
     
-          if (response && response.data) {
+          if (response && response.payload) {
          
-            SetItemsbeverage(response.data)
+            SetItemsbeverage(response.payload)
             
    
           }

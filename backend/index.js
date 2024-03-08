@@ -17,8 +17,9 @@ import multer from "multer"
 import  Customer  from "./model/customers.js"
 import transaction from "./model/transaction.js"
 import Orders from "./model/orders.js"
-import { dataOverallStat } from "./overallStats.js"
-import OverallStat from "./model/OverallStats.js"
+import About from "./model/About.js"
+// import { dataOverallStat } from "./overallStats.js"
+// import OverallStat from "./model/OverallStats.js"
 import GeneralRoutes from "./routes/general.js"
 import { Sales } from "./model/sales.js"
 import Rider from "./model/rider.js"
@@ -27,6 +28,8 @@ import RIderRoutes from "./routes/riders.js"
 import {data} from "./data.js"
 import { Server } from "socket.io"
 import http from "http"
+// import {sampleData} from "./transactiondata.js"
+import Reviews from "./model/reviews.js"
 dotenv.config();
 
 const app=express()
@@ -61,12 +64,44 @@ console.log("user disconnected",socket.id)
 })
 
 
-
+const reviewsToInsert = [
+  {
+    name: "Bill Gates",
+    review: "As a tech enthusiast and a lover of fine cuisine, I must say Amin Restaurant exceeded all my expectations! From the moment I walked in, I was greeted with warmth and hospitality. The ambiance was delightful, and the aroma of freshly cooked food tantalized my senses. The menu offered a diverse range of dishes, each more delicious than the last. The service was impeccable, and the staff went above and beyond to ensure my dining experience was nothing short of exceptional. I highly recommend Amin Restaurant to anyone looking for an unforgettable culinary journey.",
+    img: "Bill_Gates.jpg"
+  },
+  {
+    name: "Imran Khan",
+    review: "Amin Restaurant is a hidden gem in the heart of the city! From the moment I stepped through the doors, I was transported to a culinary paradise. The decor was elegant, and the atmosphere was buzzing with excitement. The menu boasted a wide selection of mouth-watering dishes, each bursting with flavor. I had the pleasure of trying several dishes, and each one was a culinary masterpiece. The staff were attentive and friendly, ensuring that every aspect of my dining experience was perfect. Amin Restaurant has definitely earned a permanent spot on my list of favorite eateries!",
+    img: "Imarn_Khan.jpg"
+  },
+  {
+    name: "Sheldon Cooper",
+    review: "As a connoisseur of all things gastronomic, I must say Amin Restaurant is a triumph of culinary excellence! From the moment I entered, I was greeted with a symphony of tantalizing aromas and an ambiance that can only be described as celestial. The menu, a veritable cornucopia of gastronomic delights, left me spoiled for choice. I sampled a variety of dishes, each a harmonious blend of flavors and textures that danced upon my palate. The service was impeccable, with the staff displaying a level of attentiveness and professionalism that is truly commendable. Amin Restaurant is, without a doubt, a culinary utopia that I wholeheartedly recommend to fellow epicureans!",
+    img: "sheldon cooper.jpeg"
+  },
+  {
+    name: "Elon Musk",
+    review: "Amin Restaurant is truly out of this world! From the moment I set foot inside, I was transported to a realm of gastronomic delights unlike any other. The ambiance was electric, and the menu offered a tantalizing array of dishes that catered to every palate. I had the pleasure of sampling several dishes, each one a testament to the culinary expertise of the chefs. The service was exceptional, with the staff demonstrating a keen attention to detail and a genuine passion for hospitality. Amin Restaurant is a must-visit for anyone seeking an extraordinary dining experience!",
+    img: "Elon_Musk.jpg"
+  },
+  {
+    name: "Robert Downey Jr.",
+    review: "Amin Restaurant is not just a dining establishment; it's an experience. From the moment you walk through the doors, you're greeted with an atmosphere that's both inviting and sophisticated. The menu is a culinary journey through flavors and textures that will leave your taste buds tingling with delight. The staff are attentive and knowledgeable, ensuring that every aspect of your dining experience is perfect. Whether you're looking for a casual meal or a special occasion, Amin Restaurant delivers on all fronts. I highly recommend it to anyone looking for a memorable dining experience.",
+    img: "Robert Downey Jr.jpeg"
+  },
+];
 
 const changeStream=Orders.watch()
+// Reviews.insertMany(reviewsToInsert)
+//   .then((result) => {
+//     console.log("Reviews inserted successfully:", result);
+//   })
+//   .catch((error) => {
+//     console.error("Error inserting reviews:", error);
+//   });
 
-
-
+// transaction.insertMany(sampleData);
 
 changeStream.on('change', function(data) {
 

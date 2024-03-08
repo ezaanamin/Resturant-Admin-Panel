@@ -5,40 +5,31 @@ import axios from 'axios';
 import { useState,useEffect } from 'react';
 import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveSunburst } from '@nivo/sunburst'
+import {useDispatch } from 'react-redux';
+import { GetSales } from '../api/API';
 function BreakDownChart({ isDashboard = false}) {
     const [data1,SetData]=useState({})
-
+const dispatch=useDispatch()
     const theme=useTheme();
-     useEffect(() => {
-       
-       
-       
-       const fetchData = async () => {
-         const response = await axios.get('http://localhost:4000/sales/sales');
-       console.log(response.data['salesByCategory'])
-         if (response && response.data) {
-        
-     
-           
-           SetData(response.data)
-           
-   
-         }
-       
-       }
-       // call the function
-       fetchData()
-     
-   
-       
-         .catch(function (error) {
-           if (error.response) {
-               console.log(error.response)
-           }
-       }) 
-   
-   
-     }, [])
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await dispatch(GetSales());
+          console.log(response.payload['salesByCategory']);
+          if (response && response.payload) {
+            SetData(response.payload);
+          }
+        } catch (error) {
+          if (error.response) {
+            console.log(error.response);
+          }
+        }
+      };
+    
+      // call the function
+      fetchData();
+    }, [dispatch]); // Make sure to include dispatch in the dependency array if it's a dependency
+    
      const colors = [
         theme.palette.secondary[500],
         theme.palette.secondary[300],

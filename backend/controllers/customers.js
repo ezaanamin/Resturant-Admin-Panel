@@ -88,12 +88,30 @@ export const CalculateTotalAmount = async (req, res) => {
 
 }
 export function hashPassword() {
-   bcrypt.hash('AvaJosh@2002', 10)
-        .then(hash => {
-           console.log(hash)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+
+const  passwords=[
+    "passwordabc",
+    "passwordxyz",
+    "password456",
+    "password789",
+    "passwordabc",
+    "password123",
+    "password456",
+    "password789",
+    "passwordabc",
+    "password123",
+    "password123",
+    "password456",
+    "password789"
+  ]
+  
+try {
+  passwords.forEach(password => {
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      console.log(`Original Password: ${password}, Hashed Password: ${hashedPassword}`);
+  });
+} catch (err) {
+  console.log(`Error hashing passwords: ${err}`);
+}
 }
  

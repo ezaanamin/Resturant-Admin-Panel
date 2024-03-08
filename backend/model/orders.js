@@ -3,13 +3,18 @@ import mongoose from "mongoose";
 const OrdersSchema = new mongoose.Schema(
   {
    order_id:Number,
-   Orders:Number,
-   customer_id:Number,
-   orders:{
-    type:mongoose.Schema.Types.ObjectId,
-  },
+      customer_id:{
+        type:mongoose.Schema.Types.ObjectId,
+      },
+      orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product' // Reference to Product collection
+      }],
  status:String,
- rider:mongoose.Schema.Types.ObjectId,
+ rider: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Rider' // assuming you have a Rider model
+},
  
   
 

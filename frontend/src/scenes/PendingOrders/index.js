@@ -9,6 +9,8 @@ import {  Chip, Stack } from "@mui/material"
 import DataGridCustomToolbar from "../../components/DataGridCustomToolbar"
 import Modal1 from "../../components/RiderModal"
 import io from 'socket.io-client';
+import { useDispatch } from 'react-redux'
+import { GetOrdersDetails,GetRiders } from '../../api/API'
 
 function PendingOrders() {
   const theme=useTheme();
@@ -37,62 +39,37 @@ useEffect(()=>{
 
 
 
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/order/get/orders/product');
- 
-      if (response && response.data) {
-     
-        const filtered = response.data.filter(item => item.status.includes("Pending"));
 
-        
-        SetOrdersData(filtered)
-        
+const dispatch=useDispatch();
 
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetOrdersDetails());
+      if (response && response.payload) {
+        console.log(response.payload, 'ezaanamin1');
+        SetOrdersData(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching orders:", error);
     }
-    const fetchData1 = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
- 
-      if (response && response.data) {
-     
-  
-        setRiders(response.data)
+  };
 
-   
-        
-
+  const fetchData1 = async () => {
+    try {
+      const response = await dispatch(GetRiders());
+      if (response && response.payload) {
+        setRiders(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching riders:", error);
     }
+  };
 
-
-
-  
-    // call the function
-    fetchData()
-    fetchData1()
-
-
-    
-
-  
-
-    
-      .catch(function (error) {
-        if (error.response) {
-            console.log(error.response)
-        }
-    }) 
-
-
-  }, [])
+  fetchData();
+  fetchData1();
+}, []);
 useEffect(()=>{
 
 },[])
@@ -107,19 +84,19 @@ useEffect(()=>{
         return '#'+parm.value
     }},
     {
-        field: "products",
-        headerName: "Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.products.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
+      field: 'products',
+      headerName: 'Name',
+      width: 500,
+      type: 'singleSelect',
+      valueOptions: [], // This should be populated with unique product names
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25}>
+          {params.row.orders.map((product) => ( // Iterate through orders array to get product names
+            <Chip key={product._id} label={product.name} />
+          ))}
+        </Stack>
+      ),
+    },
 
       {
         field: 'Dispatch',
@@ -155,7 +132,7 @@ useEffect(()=>{
 <Modal1 order_id={order_id} riders={riders}/>:null
 
 }
- <Header title={" Pendings Orders"} subtitle={"List of all Orders"}/>
+ <Header title={" Pendings Orders"} subtitle={"List of all Pending  Orders"}/>
  
  <Box mt="40px"
 position={"relative"} left="300px" 

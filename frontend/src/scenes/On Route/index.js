@@ -8,27 +8,29 @@ import { useContext } from 'react'
 import {  Chip, Stack } from "@mui/material"
 import DataGridCustomToolbar from "../../components/DataGridCustomToolbar"
 import Modal1 from "../../components/RiderModal"
-
+import { useDispatch } from 'react-redux'
+import { GetRiders,GetRidersRoutesOrders } from '../../api/API'
 function OnRoute() {
   const theme=useTheme();
 const [Orders,SetOrdersData]=useState([])
 const [riders,setRiders]=useState([])
 const {showRiders,order_id}=useContext(UserContext)
+const dispatch=useDispatch();
   useEffect(() => {
     
     
     
     const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/order/riders/routes/orders');
+      const response = await dispatch(GetRidersRoutesOrders());
  
-      if (response && response.data) {
+      if (response && response.payload) {
 
 
         
-        SetOrdersData( response.data)
+        SetOrdersData( response.payload)
         
   
-        console.log(response.data)
+        console.log(response.payload,'ezaan')
         
 
       }
@@ -36,21 +38,15 @@ const {showRiders,order_id}=useContext(UserContext)
     
     }
     const fetchData1 = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
- 
-      if (response && response.data) {
-     
-  
-        setRiders(response.data)
-
-   
-        
-
+      try {
+        const response = await dispatch(GetRiders());
+        if (response && response.payload) {
+          setRiders(response.payload);
+        }
+      } catch (error) {
+        console.error("Error fetching riders:", error);
       }
-
-    
-    }
-
+    };
 
 
   
@@ -82,35 +78,31 @@ const {showRiders,order_id}=useContext(UserContext)
         return '#'+parm.value
     }},
     {
-        field: "products",
-        headerName: "Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.products.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
+      field: 'products',
+      headerName: 'Name',
+      width: 500,
+      type: 'singleSelect',
+      valueOptions: [], // This should be populated with unique product names
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25}>
+          {params.row.orders.map((product) => ( // Iterate through orders array to get product names
+            <Chip key={product._id} label={product.name} />
+          ))}
+        </Stack>
+      ),
+    },
 
-      {
-        field: "riders",
-        headerName: "Rider Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.riders.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
-
+    {
+      field: "riders",
+      headerName: "Rider Name",
+      width: 500,
+      type: "singleSelect",
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25}>
+        <Chip label={params.row.rider.name} />
+        </Stack>
+      )
+    }
       
   
   
@@ -127,7 +119,7 @@ const {showRiders,order_id}=useContext(UserContext)
 <Modal1 order_id={order_id} riders={riders}/>:null
 
 }
- <Header title={"All Orders"} subtitle={"List of all Orders"}/>
+ <Header title={"On Route Orders"} subtitle={"List of all Route Orders"}/>
  
  <Box mt="40px"
 position={"relative"} left="300px" 

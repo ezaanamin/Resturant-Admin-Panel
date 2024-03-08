@@ -12,8 +12,8 @@ import Select from 'react-select';
 import { Input } from '@material-ui/core';
 import { InputLabel } from '@mui/material';
 import{Box}  from '@mui/material'
-
- 
+import { useDispatch } from 'react-redux';
+import { addRider } from '../../api/API';
 function RiderAddForm() {
 
 
@@ -41,28 +41,20 @@ function RiderAddForm() {
   });
 
  
-
+const dispatch=useDispatch();
 
   const handleClick = async (name,email) => {
  
 
-    const response = await axios
-    .post('http://localhost:4000/riders/add',{
-        name:name,
-        email:email
-
-  
-    })
-
-    .catch((error) => console.log('Error: ', error));
-  if(response && response.data)
+    const response =      await dispatch(addRider({ name, email }));
+  if(response && response.payload)
     {
-      alert(response.data)
+      alert(response.payload)
       if(response.data="Sucessful")
       {
         SetShowAddRider(false)
       }
-      if(response.data=="User Exists")
+      if(response.payload=="User Exists")
       {
         SetShowAddRider(false)
         SetModalShow(true)

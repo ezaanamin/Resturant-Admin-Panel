@@ -8,70 +8,43 @@ import { useContext } from 'react'
 import {  Chip, Stack } from "@mui/material"
 import DataGridCustomToolbar from "../../components/DataGridCustomToolbar"
 import Modal1 from "../../components/RiderModal"
+import { useDispatch } from 'react-redux'
+import { GetRiders,GetOrdersDetails } from '../../api/API'
 
 function DeliveredOrders() {
   const theme=useTheme();
 const [Orders,SetOrdersData]=useState([])
 const [riders,setRiders]=useState([])
 const {showRiders,order_id}=useContext(UserContext)
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/order/get/orders/product');
- 
-      if (response && response.data) {
-     
-        const filtered = response.data.filter(item => item.status.includes("delivered"));
-
-        
-        SetOrdersData(filtered)
-        
-  
-        console.log(response.data)
-        
-
+const dispatch=useDispatch()
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await dispatch(GetOrdersDetails());
+      if (response && response.payload) {
+        const filtered = response.payload.filter(item => item.status.includes("delivered"));
+        SetOrdersData(filtered);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching order details:", error);
     }
-    const fetchData1 = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
- 
-      if (response && response.data) {
-     
-  
-        setRiders(response.data)
+  };
 
-   
-        
-
+  const fetchData1 = async () => {
+    try {
+      const response = await dispatch(GetRiders());
+      if (response && response.payload) {
+        setRiders(response.payload);
       }
-
-    
+    } catch (error) {
+      console.error("Error fetching riders:", error);
     }
+  };
 
-
-
-  
-    // call the function
-    fetchData()
-    fetchData1()
-
-
-    
-
-  
-
-    
-      .catch(function (error) {
-        if (error.response) {
-            console.log(error.response)
-        }
-    }) 
-
-  }, [])
+  // Call the functions
+  fetchData();
+  fetchData1();
+}, []);
 
 
   const columns = [
@@ -83,19 +56,19 @@ const {showRiders,order_id}=useContext(UserContext)
         return '#'+parm.value
     }},
     {
-        field: "products",
-        headerName: "Name",
-        width: 500,
-        type: "singleSelect",
-        valueOptions: [...new Set(Orders.map((o) => o.products))],
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.25}>
-            {params.row.products.map((c) => (
-              <Chip label={c.name} />
-            ))}
-          </Stack>
-        )
-      },
+      field: 'products',
+      headerName: 'Name',
+      width: 500,
+      type: 'singleSelect',
+      valueOptions: [], // This should be populated with unique product names
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.25}>
+          {params.row.orders.map((product) => ( // Iterate through orders array to get product names
+            <Chip key={product._id} label={product.name} />
+          ))}
+        </Stack>
+      ),
+    },
 
       {
         field: 'status',
@@ -122,7 +95,7 @@ const {showRiders,order_id}=useContext(UserContext)
 <Modal1 order_id={order_id} riders={riders}/>:null
 
 }
- <Header title={"All Orders"} subtitle={"List of all Orders"}/>
+ <Header title={"Delivered Order"} subtitle={"List of all Delivered  Orders"}/>
  
  <Box mt="40px"
 position={"relative"} left="300px" 

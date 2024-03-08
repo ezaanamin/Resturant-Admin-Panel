@@ -12,6 +12,8 @@ import { UserContext } from '../../context/context';
 import { useContext } from 'react';
 import RiderAddForm from './AddRider';
 import SimpleModal from '../../components/SimpleModal';
+import { useDispatch } from 'react-redux';
+import { GetRiders } from '../../api/API';
 function Rider() {
   const {     ShowAddRider,SetShowAddRider,modalShow  }=useContext(UserContext)
 
@@ -46,41 +48,25 @@ useEffect(()=>{
 
 
 },[modalShow])
-  useEffect(() => {
-    
-    
-    
-    const fetchData = async () => {
-      const response = await axios.get('http://localhost:4000/riders');
-    
-      if (response && response.data) {
-          console.log(response.data)
-          SetRider(response.data)
-  
-        
-        
-        
+const dispatch=useDispatch();
+useEffect(() => {
 
+
+  const fetchData1 = async () => {
+    try {
+      const response = await dispatch(GetRiders());
+      if (response && response.payload) {
+        SetRider(response.payload);
       }
-      else
-      {
-        console.log("error")
-      }
-    
+    } catch (error) {
+      console.error("Error fetching riders:", error);
     }
- 
-    // call the function
-    fetchData()
-   
-    
-      .catch(function (error) {
-        if (error.response) {
-             console.log(error)
-        }
-    }) 
+  };
 
+  // Call the functions
 
-  }, [])
+  fetchData1();
+}, []);
 
   const columns = [
 
